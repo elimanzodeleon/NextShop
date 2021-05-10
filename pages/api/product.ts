@@ -1,11 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '../../utils/connectDB';
 import Product from '../../models/Product';
+import { IError } from '../../interfaces/products';
 
 connectDB();
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
+    case 'GET':
+      await handleGetRequest(req, res);
+      break;
     case 'POST':
       await handlePostRequest(req, res);
       break;
@@ -17,8 +21,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
-  const id = req.body.id as string;
+// method that handles get req sent to /api/product (client must send {params: {<id-or-whatever>}} in req)
+const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const id = req.query.id as string;
   try {
     const product = await Product.findById(id);
     return res.status(200).json({ data: product });
@@ -27,6 +32,40 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+// method that handles post req sent to /api/product
+const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const {
+    name,
+    price,
+    image,
+    description,
+  }: {
+    name: string;
+    price: string;
+    image: string;
+    description: string;
+  } = req.body;
+
+  try {
+    // NOTE, sku will be added by default (defined in models/Product.ts)
+    const product = await Product.create({
+      name,
+      price,
+      description,
+      mediaUrl: image,
+    });
+    res.status(201).json({ success: true });
+  } catch (error) {
+    let message = 'Unable to add product';
+    if (error.name === 'ValidationError') {
+      const err = Object.values(error.errors)[0] as IError;
+      message = err['message'];
+    }
+    res.status(400).json({ error: message });
+  }
+};
+
+// method that handles delete req sent to /api/product
 const handleDeleteRequest = async (
   req: NextApiRequest,
   res: NextApiResponse

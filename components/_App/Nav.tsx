@@ -5,7 +5,7 @@ import { useRouter, NextRouter } from 'next/router';
 import { Menu, Container, Button, Image } from 'semantic-ui-react';
 
 const Nav = () => {
-  const user = false;
+  const user = true;
   const router = useRouter();
   return (
     <div>

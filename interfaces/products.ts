@@ -8,3 +8,7 @@ export interface IProduct extends Document {
   description: string;
   mediaUrl: string;
 }
+
+export interface IError {
+  message: string;
+}

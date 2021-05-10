@@ -5,11 +5,17 @@ import Product from '../../models/Product';
 connectDB();
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'method not allowed' });
+  switch (req.method) {
+    case 'GET':
+      await handleGetRequest(req, res);
+      break;
+    default:
+      res.status(405).json({ message: 'method not allowed' });
   }
+};
 
-  const products = await Product.find();
-
+const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  // sort the products by newest first
+  const products = await Product.find().sort({ createdAt: -1 });
   res.status(200).json({ data: products });
 };

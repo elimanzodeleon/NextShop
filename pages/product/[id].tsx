@@ -2,11 +2,9 @@ import axios from 'axios';
 import React from 'react';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
-import { Card, Image } from 'semantic-ui-react';
 
 import ProductFeatures from '../../components/Product/ProductFeatures';
 import ProductSummary from '../../components/Product/ProductSummary';
-import AddProductToCart from '../../components/Product/AddProductToCart';
 
 const Product = ({ product }) => {
   const { _id, name, price, description, mediaUrl } = product;
@@ -26,10 +24,10 @@ const Product = ({ product }) => {
 
 export const getStaticProps: GetStaticProps = async ctx => {
   const id = ctx.params.id as string;
-  const res = await axios.post(
+  const res = await axios.get(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/product`,
     {
-      id,
+      params: { id },
     }
   );
   return { props: { product: res.data.data }, revalidate: 1 };
