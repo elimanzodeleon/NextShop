@@ -54,14 +54,15 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       description,
       mediaUrl: image,
     });
-    res.status(201).json({ success: true });
+    res.status(201).json({ success: true, product });
   } catch (error) {
-    let message = 'Unable to add product';
+    let message = 'Internal Server Error: Unable to add product';
     if (error.name === 'ValidationError') {
       const err = Object.values(error.errors)[0] as IError;
       message = err['message'];
+      return res.status(400).json({ error: message });
     }
-    res.status(400).json({ error: message });
+    res.status(500).json({ error: message });
   }
 };
 

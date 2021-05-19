@@ -3,7 +3,7 @@ import { Item, Label } from 'semantic-ui-react';
 
 import AddProductToCart from './AddProductToCart';
 
-const ProductSummary = ({ _id, name, price, sku, mediaUrl }) => {
+const ProductSummary = ({ _id, name, price, sku, mediaUrl, user }) => {
   return (
     <>
       <Item.Group>
@@ -18,7 +18,7 @@ const ProductSummary = ({ _id, name, price, sku, mediaUrl }) => {
               </Label>
             </Item.Description>
             <Item.Extra>
-              <AddProductToCart id={_id} />
+              <AddProductToCart id={_id} user={user} />
             </Item.Extra>
           </Item.Content>
         </Item>

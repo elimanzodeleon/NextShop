@@ -6,18 +6,14 @@ import { useRouter } from 'next/router';
 import ProductFeatures from '../../components/Product/ProductFeatures';
 import ProductSummary from '../../components/Product/ProductSummary';
 
-const Product = ({ product }) => {
+const Product = ({ product, user }) => {
   const { _id, name, price, description, mediaUrl } = product;
   const router = useRouter();
 
-  const goBack = () => {
-    router.back();
-  };
-
   return (
     <>
-      <ProductSummary {...product} />
-      <ProductFeatures {...product} />
+      <ProductSummary {...product} user={user} />
+      <ProductFeatures {...product} user={user} />
     </>
   );
 };

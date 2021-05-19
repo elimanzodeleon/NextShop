@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Header,
@@ -10,33 +9,51 @@ import {
   TextArea,
   Label,
 } from 'semantic-ui-react';
+import { handleError } from '../utils/handleError';
+import { IError } from '../interfaces/products';
 
 interface IProduct {
   name: string;
   price: string;
+  image: File;
   description: string;
-  label: string;
-  error: boolean;
-  loading: boolean;
 }
 
-const initState = {
+const initialState = {
   name: '',
   price: '',
+  image: null,
   description: '',
-  label: '',
-  error: false,
-  loading: false,
+};
+
+const errorInitialState = {
+  isError: false,
+  message: '',
 };
 
 const Add = () => {
-  const [product, setProduct] = useState<IProduct>(initState);
-  const [imageFile, setImageFile] = useState<File>();
+  const [product, setProduct] = useState<IProduct>(initialState);
+  const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [label, setLabel] = useState('');
+  const [error, setError] = useState<IError>(errorInitialState);
   const router = useRouter();
+
+  useEffect(() => {
+    const buttonDisabled =
+      loading ||
+      !product.name ||
+      !product.price ||
+      !product.image ||
+      !product.description;
+
+    buttonDisabled ? setDisabled(true) : setDisabled(false);
+  }, [product]);
 
   const addProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setProduct(prevState => ({ ...product, loading: true, error: false }));
+    setLoading(true);
+    setError(errorInitialState);
 
     try {
       const url: string = await uploadImage();
@@ -50,59 +67,68 @@ const Add = () => {
         }
       );
 
-      setProduct(prevState => ({ ...product, label: 'Product added' }));
+      setProduct(prevState => ({
+        ...product,
+        name: '',
+        price: '',
+        description: '',
+      }));
+      setLabel('Product added');
+      setProduct(initialState);
       setTimeout(() => {
-        router.push('/');
-      }, 500);
+        setLabel('');
+      }, 3000);
     } catch (error) {
-      setProduct(prevState => ({ ...product, error: true }));
-      setProduct(prevState => ({ ...product, label: 'unable to add product' }));
-      setTimeout(() => {
-        setProduct(prevState => ({ ...product, label: '' }));
-      }, 2000);
+      handleError(error, setError);
+    } finally {
+      setLoading(false);
     }
   };
 
   // fn that will upload user selected image to cloudinary
   const uploadImage = async () => {
-    const data = new FormData();
-    data.append('file', imageFile);
-    data.append('upload_preset', 'nextshopproduct');
+    try {
+      const data = new FormData();
+      data.append('file', product.image);
+      data.append('upload_preset', 'nextshopproduct');
 
-    const res = await axios.post(process.env.NEXT_PUBLIC_CLOUDINARY_URL, data);
-    return res.data.secure_url;
+      const res = await axios.post(
+        process.env.NEXT_PUBLIC_CLOUDINARY_URL,
+        data
+      );
+      return res.data.secure_url;
+    } catch (error) {
+      handleError(error, setError);
+    }
   };
 
   const handleFormChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as HTMLInputElement;
+    const { name, value, files } = e.target as HTMLInputElement;
 
-    // if current is image, we need to update product state differently
-
-    setProduct(prevState => ({ ...prevState, [name]: value }));
+    // need to set image property differently
+    if (name === 'image') {
+      setProduct(prevState => ({ ...prevState, image: files[0] }));
+    } else {
+      setProduct(prevState => ({ ...prevState, [name]: value }));
+    }
   };
-
-  const buttonDisabled =
-    product.loading ||
-    !product.name ||
-    !product.price ||
-    !imageFile ||
-    !product.description;
 
   return (
     <>
-      <Header as='h2' style={{ marginTop: '2em' }}>
-        Add new product
-      </Header>
-      {product.label && (
-        <Label
-          color={product.error ? 'red' : 'green'}
-          size='large'
-          style={{ marginBottom: '1em' }}
-        >
-          {product.label}
-        </Label>
-      )}
-      <Form onSubmit={addProduct}>
+      <Form onSubmit={addProduct} loading={loading}>
+        <Header as='h2' style={{ marginTop: '1em' }}>
+          Add new product
+        </Header>
+        {label && (
+          <Label color='green' size='large' style={{ marginBottom: '1em' }}>
+            {label}
+          </Label>
+        )}
+        {error.isError && (
+          <Label color='red' size='large' style={{ marginBottom: '1em' }}>
+            {error.message}
+          </Label>
+        )}
         <Form.Group widths='equal'>
           <Form.Field
             fluid
@@ -132,7 +158,7 @@ const Add = () => {
             type='file'
             accept='image/*'
             content='Select Image'
-            onChange={e => setImageFile(e.target.files[0])}
+            onChange={handleFormChange}
             required
           />
         </Form.Group>
@@ -146,12 +172,7 @@ const Add = () => {
           style={{ resize: 'none' }}
           required
         />
-        <Button
-          type='submit'
-          color='twitter'
-          disabled={buttonDisabled}
-          loading={product.loading}
-        >
+        <Button type='submit' color='twitter' disabled={disabled}>
           Add
         </Button>
       </Form>

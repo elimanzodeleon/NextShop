@@ -7,6 +7,7 @@ import NProgress from 'nprogress';
 import Nav from './Nav';
 import HeadContent from './HeadContent';
 import React from 'react';
+import { IUserFrontEnd } from '../../interfaces/user';
 
 // progress bar will be controlled by the router
 Router.events.on('routeChangeStart', () => {
@@ -21,15 +22,16 @@ Router.events.on('routeChangeError', () => {
 
 interface Props {
   children: JSX.Element | JSX.Element[];
+  user?: IUserFrontEnd;
 }
 
-const Layout: React.FC<Props> = ({ children }) => {
+const Layout: React.FC<Props> = ({ children, user }) => {
   return (
     <>
       <Head>
         <HeadContent />
       </Head>
-      <Nav />
+      <Nav user={user} />
       <Container text>{children}</Container>
     </>
   );

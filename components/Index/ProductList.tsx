@@ -5,7 +5,7 @@ const ProductList = ({ products }) => {
   return (
     <>
       {/* stackable makes card group responsive o diff screen sizes */}
-      <Card.Group stackable itemsPerRow={3}>
+      <Card.Group doubling itemsPerRow={4}>
         {products.map(product => {
           const { _id, name, price, mediaUrl } = product;
           return (

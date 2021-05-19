@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter, NextRouter } from 'next/router';
 import { Menu, Container, Button, Image } from 'semantic-ui-react';
+import { IUserFrontEnd } from '../../interfaces/user';
 
-const Nav = () => {
-  const user = true;
+interface Props {
+  user: IUserFrontEnd;
+}
+
+const Nav: React.FC<Props> = ({ user }) => {
+  const [search, setSearch] = useState(true);
   const router = useRouter();
   return (
     <div>
       <Head>
         <link rel='stylesheet' href='/nprogress.css' />
       </Head>
-      <Menu fluid pointing secondary>
+      <Menu fluid pointing secondary stackable>
         <Container text>
           <Link href='/'>
             <Menu.Item active={router.pathname === '/'}>Next Shop</Menu.Item>
@@ -44,18 +49,10 @@ const Links: React.FC<{ router: NextRouter }> = ({ router }) => {
 const AuthLinks = ({ router }) => {
   return (
     <>
-      <Link href='/add'>
-        <Menu.Item className='button' active={router.pathname === '/add'}>
-          Add
-        </Menu.Item>
-      </Link>
       <Link href='/account'>
         <Menu.Item className='button' active={router.pathname === '/account'}>
           Account
         </Menu.Item>
-      </Link>
-      <Link href='/'>
-        <Menu.Item>Log out</Menu.Item>
       </Link>
       <Link href='/cart'>
         <Menu.Item>

@@ -1,7 +1,6 @@
 import { Document } from 'mongoose';
 
 export interface IProduct extends Document {
-  _id: string;
   name: string;
   price: number;
   sku: string;
@@ -10,5 +9,6 @@ export interface IProduct extends Document {
 }
 
 export interface IError {
+  isError?: boolean;
   message: string;
 }

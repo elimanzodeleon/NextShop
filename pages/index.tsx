@@ -1,11 +1,14 @@
 import axios from 'axios';
 import { GetStaticProps } from 'next';
+import { Header } from 'semantic-ui-react';
 import ProductList from '../components/Index/ProductList';
 
 const Home = ({ products }) => {
   return (
-    <div>
-      <h1 style={{ textAlign: 'center' }}>Home</h1>
+    <div style={{ paddingTop: '1em' }}>
+      <Header as='h1' style={{ textAlign: 'center' }}>
+        Home
+      </Header>
       <ProductList products={products} />
     </div>
   );

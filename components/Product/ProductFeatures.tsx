@@ -3,11 +3,23 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Modal, Button, Label } from 'semantic-ui-react';
 
-const ProductFeatures = ({ _id, name, price, sku, description, mediaUrl }) => {
+const ProductFeatures = ({
+  _id,
+  name,
+  price,
+  sku,
+  description,
+  mediaUrl,
+  user,
+}) => {
   const admin = true; // use global state to see if the current user has admin priveledges
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [label, setLabel] = useState('');
   const router = useRouter();
+
+  // bool for whether or not current user has permissions to delete products
+  const deletePermissions =
+    user && (user.role === 'admin' || user.role === 'root');
 
   const deleteProduct = async () => {
     try {
@@ -33,7 +45,7 @@ const ProductFeatures = ({ _id, name, price, sku, description, mediaUrl }) => {
   return (
     <>
       <p>{description}</p>
-      {admin && (
+      {deletePermissions && (
         <>
           <Button color='red' onClick={() => setIsModalOpen(true)}>
             delete item
