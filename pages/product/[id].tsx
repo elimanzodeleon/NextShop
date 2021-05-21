@@ -1,15 +1,11 @@
 import axios from 'axios';
 import React from 'react';
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
 
 import ProductFeatures from '../../components/Product/ProductFeatures';
 import ProductSummary from '../../components/Product/ProductSummary';
 
 const Product = ({ product, user }) => {
-  const { _id, name, price, description, mediaUrl } = product;
-  const router = useRouter();
-
   return (
     <>
       <ProductSummary {...product} user={user} />

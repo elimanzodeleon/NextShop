@@ -1,10 +1,26 @@
-import axios from 'axios';
 import React from 'react';
 import Link from 'next/link';
-import { Header, Segment, Button, Item } from 'semantic-ui-react';
+import {
+  Header,
+  Segment,
+  Message,
+  Button,
+  Item,
+  Divider,
+} from 'semantic-ui-react';
 import { useRouter } from 'next/router';
 
-const CartItemList = ({ products, removeProduct }) => {
+const CartItemList = ({ products, removeProduct, success }) => {
+  if (success) {
+    return (
+      <Message
+        info
+        header='Thank you for your order'
+        content='Your order will be shipped within the next 1-3 business days. Please check your email for more information.'
+      />
+    );
+  }
+
   return (
     <Segment secondary placeholder>
       {products.length === 0 ? (
@@ -17,7 +33,6 @@ const CartItemList = ({ products, removeProduct }) => {
 };
 
 const CartList = ({ products, removeProduct }) => {
-  console.log(products);
   const router = useRouter();
 
   return (
@@ -54,6 +69,7 @@ const CartList = ({ products, removeProduct }) => {
           </Item>
         );
       })}
+      <Divider />
       <Link href='/'>
         <Button>Continue shopping</Button>
       </Link>

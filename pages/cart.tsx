@@ -5,11 +5,14 @@ import { parseCookies } from 'nookies';
 import { Segment } from 'semantic-ui-react';
 import cookie from 'js-cookie';
 
+import getStripe from '../utils/stripe';
 import CartItemList from '../components/Cart/CartItemList';
 import CartSummary from '../components/Cart/CartSummary';
 
 const Cart = ({ products }) => {
   const [cartProducts, setCartProducts] = useState(products);
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRemoveProduct = async (id: string) => {
     // send delete request to cart endpoint
@@ -32,13 +35,43 @@ const Cart = ({ products }) => {
     }
   };
 
+  const handleCheckout = async paymentData => {
+    setLoading(true);
+    try {
+      const token = cookie.get('token');
+      const {
+        data: { sessionId },
+      } = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout`,
+        { paymentData },
+        { headers: { authorization: token } }
+      );
+
+      const stripe = await getStripe();
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
+
+      setSuccess(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Segment style={{ marginTop: '1em' }}>
+    <Segment loading={loading} style={{ marginTop: '1em' }}>
       <CartItemList
         products={cartProducts}
         removeProduct={handleRemoveProduct}
+        success={success}
       />
-      <CartSummary products={cartProducts} />
+      <CartSummary
+        products={cartProducts}
+        handleCheckout={handleCheckout}
+        success={success}
+      />
     </Segment>
   );
 };

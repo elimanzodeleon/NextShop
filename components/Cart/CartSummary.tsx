@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Segment, Divider } from 'semantic-ui-react';
 import { calculateTotal } from '../../utils/cart';
 
-const CartSummary = ({ products }) => {
+const CartSummary = ({ products, handleCheckout, success }) => {
   const [cartTotal, setCartTotal] = useState('0');
   const [stripeTotal, setStripeTotal] = useState(0);
   const [isCartEmpty, setIsCartEmpty] = useState(true);
@@ -20,7 +20,12 @@ const CartSummary = ({ products }) => {
       <Divider />
       <Segment clearing size='large'>
         <strong>Subtotal: </strong> ${cartTotal}
-        <Button color='twitter' floated='right' disabled={isCartEmpty}>
+        <Button
+          color='twitter'
+          floated='right'
+          disabled={isCartEmpty || success}
+          onClick={() => handleCheckout({ stripeTotal })}
+        >
           Checkout
         </Button>
       </Segment>

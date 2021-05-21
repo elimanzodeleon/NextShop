@@ -1,5 +1,3 @@
-interface Props {}
-
 // cart helpr fn that calculates total of cart
 export const calculateTotal = (
   products: any
@@ -18,4 +16,10 @@ export const calculateTotal = (
   const stripeTotal = Number((total * 100).toFixed(2));
 
   return { cartTotal, stripeTotal };
+};
+
+export const formatAmountForStripe = (price, quantity) => {
+  const total = price * quantity;
+  const stripeTotal = Number((total * 100).toFixed(2));
+  return stripeTotal;
 };
