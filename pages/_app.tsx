@@ -29,7 +29,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
       appContext.ctx.pathname === '/add';
 
     if (isProtectedRoute) {
-      redirectUser(appContext.ctx, '/login');
+      redirectUser(appContext.ctx, '/');
     }
   } else {
     try {

@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import connectDB from '../../utils/connectDB';
 import Cart from '../../models/Cart';
-import { ItemContent } from 'semantic-ui-react';
 
 connectDB();
 

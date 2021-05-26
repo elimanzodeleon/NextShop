@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Segment, Divider } from 'semantic-ui-react';
+import { Button, Segment, Divider, Label } from 'semantic-ui-react';
 import { calculateTotal } from '../../utils/cart';
 
-const CartSummary = ({ products, handleCheckout, success }) => {
+const CartSummary = ({ products, handleCheckout }) => {
   const [cartTotal, setCartTotal] = useState('0');
   const [stripeTotal, setStripeTotal] = useState(0);
   const [isCartEmpty, setIsCartEmpty] = useState(true);
@@ -23,7 +23,7 @@ const CartSummary = ({ products, handleCheckout, success }) => {
         <Button
           color='twitter'
           floated='right'
-          disabled={isCartEmpty || success}
+          disabled={isCartEmpty}
           onClick={() => handleCheckout({ stripeTotal })}
         >
           Checkout

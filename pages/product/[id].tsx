@@ -30,9 +30,9 @@ export const getStaticPaths: GetStaticPaths = async ctx => {
   const res = await axios.get(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/products`
   );
-  const paths = res.data.data.map(
-    product => `/product/${product._id.toString()}`
-  );
+
+  const { products } = res.data.data;
+  const paths = products.map(product => `/product/${product._id.toString()}`);
   return { paths, fallback: false };
 };
 

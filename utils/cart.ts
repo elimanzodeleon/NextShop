@@ -23,3 +23,6 @@ export const formatAmountForStripe = (price, quantity) => {
   const stripeTotal = Number((total * 100).toFixed(2));
   return stripeTotal;
 };
+
+// convert price from cents to dollars
+export const convertPrice = price => (price / 100.0).toFixed(2);

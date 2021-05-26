@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
-import Cart from '../../models/Cart';
-import Order from '../../models/Order';
-import connectDB from '../../utils/connectDB';
-import { calculateTotal, formatAmountForStripe } from '../../utils/cart';
+import Cart from '../../../models/Cart';
+import User from '../../../models/User';
+import connectDB from '../../../utils/connectDB';
+import { formatAmountForStripe } from '../../../utils/cart';
 
 connectDB();
 
@@ -23,10 +23,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { paymentData } = req.body;
-
-  console.log(paymentData);
-
   // 1 - verify and get user id from token
   const token = req.headers.authorization;
   if (!token) {
@@ -34,21 +30,18 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   }
   try {
     const { id } = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
-
-    // 2 - find cart based on user id, populate it
+    console.log(id);
+    // 2 - find cart based on user id, populate the products
     const userCart = await Cart.findOne({ user: id }).populate({
       path: 'products.product',
     });
 
-    // 3 - recalculate cart total for extra security (user may have manipulated price on front end)
-    const { cartTotal, stripeTotal } = calculateTotal(userCart.products);
-
-    // 3 - BETTER IDEA -> grab quantity, name, price from each product and create a new list to set to line_items
+    // 3 - grab quantity, name, price from each product and create a new list to set to line_items for stripe
     const cartItems = userCart.products.map(product => {
       // need sku, name, price, quantity
       const {
         quantity,
-        product: { name, price, sku, mediaUrl },
+        product: { name, price, mediaUrl },
       } = product;
       // return object formatted for stripe line_items
       return {
@@ -58,22 +51,33 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             name,
             images: [mediaUrl],
           },
-          unit_amount: formatAmountForStripe(price, quantity),
+          unit_amount: formatAmountForStripe(price, 1),
         },
         quantity,
       };
     });
+    // 4 - grab user email from Users collection using id
+    const user = await User.findById(id);
 
-    // 4 - get email from payment data and see if emaiil linked with existing stripe customer
-    // const prevCustomer = await stripe.customers.list({
-    //   email: paymentData.email,
-    //   limit: 1,
-    // });
+    // 5 - grab user stripe info if they already exist within stripe
+    const prevCustomer = await stripe.customers.list({
+      email: user.email,
+      limit: 1,
+    });
 
-    // 5 - if customer not exist, create one based on email
-    // 6 - create charge with total, send receipt to email
+    let stripeCustomerId: string;
+    // if customer does not exist yet, create one
+    if (prevCustomer.data.length === 0) {
+      const newCustomer = await stripe.customers.create({ email: user.email });
+      stripeCustomerId = newCustomer.id;
+    } else {
+      stripeCustomerId = prevCustomer.data[0].id;
+    }
+
+    // 6 - create charge using cartItems, send receipt to email
     const checkoutSession: Stripe.Checkout.Session = await stripe.checkout.sessions.create(
       {
+        customer: stripeCustomerId,
         payment_method_types: ['card'],
         line_items: cartItems,
         mode: 'payment',
@@ -82,13 +86,10 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     );
 
-    // 7 - add order to orders collection
-    // 8 - clear product in current users cart once order complete
-    // 9 - send res 200 with id to redirect user to checkout-> success
-    return res.status(200).json({ sessionId: checkoutSession.id, cartItems });
+    // 10 - send res 200 with id to redirect user to checkout-> success
+    return res.status(200).json({ sessionId: checkoutSession.id });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-
-  res.status(200).json({ message: 'req received' });
 };

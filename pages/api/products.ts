@@ -15,7 +15,25 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { page, resultsPerPage } = req.query;
+  const pageNum = Number(page);
+  const numResultsPerPage = Number(resultsPerPage);
+  const totalProducts = await Product.countDocuments();
+  const totalPages = Math.ceil(totalProducts / numResultsPerPage);
+  let products;
+  // if no page in query, user is at page 1/index
+  if (pageNum === 1) {
+    products = await Product.find()
+      .sort({ createdAt: -1 })
+      .limit(numResultsPerPage);
+  } else {
+    // user is on page 2, 3, ...
+    const offset = (pageNum - 1) * numResultsPerPage;
+    products = await Product.find()
+      .sort({ createdAt: -1 })
+      .limit(numResultsPerPage)
+      .skip(offset);
+  }
   // sort the products by newest first
-  const products = await Product.find().sort({ createdAt: -1 });
-  res.status(200).json({ data: products });
+  res.status(200).json({ data: { products, totalPages } });
 };

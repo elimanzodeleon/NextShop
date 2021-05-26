@@ -36,6 +36,7 @@ const Add = () => {
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [label, setLabel] = useState('');
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState<IError>(errorInitialState);
   const router = useRouter();
 
@@ -50,9 +51,20 @@ const Add = () => {
     buttonDisabled ? setDisabled(true) : setDisabled(false);
   }, [product]);
 
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (success) {
+      timeout = setTimeout(() => {
+        setLabel('');
+      }, 2000);
+    }
+    return () => clearTimeout(timeout);
+  }, [success]);
+
   const addProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setSuccess(false);
     setError(errorInitialState);
 
     try {
@@ -75,9 +87,7 @@ const Add = () => {
       }));
       setLabel('Product added');
       setProduct(initialState);
-      setTimeout(() => {
-        setLabel('');
-      }, 3000);
+      setSuccess(true);
     } catch (error) {
       handleError(error, setError);
     } finally {

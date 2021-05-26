@@ -1,14 +1,16 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import cookie from 'js-cookie';
-import { Input, Button, Label } from 'semantic-ui-react';
+import { Button, Label } from 'semantic-ui-react';
 
 const AddProductToCart = ({ id, user }) => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [label, setLabel] = useState('');
+  const router = useRouter();
 
   // useeffect to prevent warning trying to change state of unmounted component
   // occurs if user attempts to change page before setTimout completes
@@ -27,7 +29,11 @@ const AddProductToCart = ({ id, user }) => {
 
   const handleAddProductToCart = async () => {
     setLoading(true);
-    setSuccess(false);
+
+    if (success) {
+      return router.push('/cart');
+    }
+
     const token = cookie.get('token');
     try {
       // send put request to api since adding NOT creating
@@ -53,21 +59,25 @@ const AddProductToCart = ({ id, user }) => {
   return (
     <div>
       {user ? (
-        <Input
-          action={{
-            color: 'twitter',
-            content: 'Add to Cart',
-            disabled: loading,
-            loading: loading,
-            onClick: handleAddProductToCart,
-          }}
-          type='number'
-          value={quantity}
-          onChange={e => setQuantity(Number(e.target.value))}
-          min={1}
-          max={5}
-          fluid
-        />
+        <>
+          <Button
+            color={success ? 'grey' : 'twitter'}
+            onClick={handleAddProductToCart}
+            floated='left'
+            loading={loading}
+            disabled={loading}
+          >
+            {success ? 'Checkout' : 'Add to cart'}
+          </Button>
+          <Button
+            basic
+            color='grey'
+            floated='right'
+            onClick={() => router.back()}
+          >
+            Continue shopping
+          </Button>
+        </>
       ) : (
         <Link href='/login'>
           <Button color='twitter' fluid>
@@ -75,8 +85,9 @@ const AddProductToCart = ({ id, user }) => {
           </Button>
         </Link>
       )}
+
       {label && (
-        <Label color='green' size='large' style={{ marginTop: '1em' }}>
+        <Label basic color='green' size='large' style={{ marginTop: '0.5em' }}>
           {label}
         </Label>
       )}

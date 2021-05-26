@@ -1,3 +1,4 @@
+// using singloeton pattern so we only instantiate strip once
 import { Stripe, loadStripe } from '@stripe/stripe-js';
 
 let stripePromise: Promise<Stripe | null>;

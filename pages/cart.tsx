@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import jwt from 'jsonwebtoken';
 import { parseCookies } from 'nookies';
-import { Segment } from 'semantic-ui-react';
+import { Segment, Label } from 'semantic-ui-react';
 import cookie from 'js-cookie';
 
 import getStripe from '../utils/stripe';
@@ -11,7 +11,6 @@ import CartSummary from '../components/Cart/CartSummary';
 
 const Cart = ({ products }) => {
   const [cartProducts, setCartProducts] = useState(products);
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRemoveProduct = async (id: string) => {
@@ -35,7 +34,7 @@ const Cart = ({ products }) => {
     }
   };
 
-  const handleCheckout = async paymentData => {
+  const handleCheckout = async () => {
     setLoading(true);
     try {
       const token = cookie.get('token');
@@ -43,7 +42,7 @@ const Cart = ({ products }) => {
         data: { sessionId },
       } = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout`,
-        { paymentData },
+        {},
         { headers: { authorization: token } }
       );
 
@@ -51,8 +50,6 @@ const Cart = ({ products }) => {
       const { error } = await stripe.redirectToCheckout({
         sessionId,
       });
-
-      setSuccess(true);
     } catch (error) {
       console.log(error);
     } finally {
@@ -65,13 +62,12 @@ const Cart = ({ products }) => {
       <CartItemList
         products={cartProducts}
         removeProduct={handleRemoveProduct}
-        success={success}
       />
-      <CartSummary
-        products={cartProducts}
-        handleCheckout={handleCheckout}
-        success={success}
-      />
+      <CartSummary products={cartProducts} handleCheckout={handleCheckout} />
+      <Label color='red' size='large'>
+        For testing purposes use card information [4242 4242 4242 4242, 04/24,
+        424]
+      </Label>
     </Segment>
   );
 };

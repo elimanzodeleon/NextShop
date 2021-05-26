@@ -1,26 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import {
-  Header,
-  Segment,
-  Message,
-  Button,
-  Item,
-  Divider,
-} from 'semantic-ui-react';
+import { Header, Segment, Button, Item, Divider } from 'semantic-ui-react';
 import { useRouter } from 'next/router';
 
-const CartItemList = ({ products, removeProduct, success }) => {
-  if (success) {
-    return (
-      <Message
-        info
-        header='Thank you for your order'
-        content='Your order will be shipped within the next 1-3 business days. Please check your email for more information.'
-      />
-    );
-  }
-
+const CartItemList = ({ products, removeProduct }) => {
   return (
     <Segment secondary placeholder>
       {products.length === 0 ? (

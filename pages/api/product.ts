@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '../../utils/connectDB';
 import Product from '../../models/Product';
+import Cart from '../../models/Cart';
 import { IError } from '../../interfaces/products';
 
 connectDB();
@@ -74,10 +75,17 @@ const handleDeleteRequest = async (
   const id = req.body.id as string;
 
   try {
+    // 1 - delete product from db
     await Product.findByIdAndDelete(id);
+    // 2- delete product wherever it shows up in db (cascade delete)
+    await Cart.updateMany(
+      { 'products.product': id },
+      { $pull: { products: { product: id } } }
+    );
+
     // 204 -> successful req with no response data
     return res.status(204).json({});
   } catch (error) {
-    return res.status(404).json({ success: false, error: error.message });
+    return res.status(500).json({ error: 'error deleting product' });
   }
 };

@@ -1,6 +1,5 @@
 import Router from 'next/router';
 import cookie from 'js-cookie';
-import { destroyCookie } from 'nookies';
 
 // fn will handle setting coken with user token upon login/signup
 export const handleLogin = (token: string) => {

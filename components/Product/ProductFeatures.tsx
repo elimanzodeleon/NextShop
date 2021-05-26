@@ -3,18 +3,10 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Modal, Button, Label } from 'semantic-ui-react';
 
-const ProductFeatures = ({
-  _id,
-  name,
-  price,
-  sku,
-  description,
-  mediaUrl,
-  user,
-}) => {
-  const admin = true; // use global state to see if the current user has admin priveledges
+const ProductFeatures = ({ _id, description, user }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [label, setLabel] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   // bool for whether or not current user has permissions to delete products
@@ -22,22 +14,22 @@ const ProductFeatures = ({
     user && (user.role === 'admin' || user.role === 'root');
 
   const deleteProduct = async () => {
+    setLoading(true);
     try {
       // delete method MUST have id in data object within body
-      const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/product`,
-        {
-          data: {
-            id: _id,
-          },
-        }
-      );
+      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/product`, {
+        data: {
+          id: _id,
+        },
+      });
       setLabel('product deleted');
+
       // alert user that product was deleted then send them to home page after 0.5s
       setTimeout(() => {
         router.push('/');
       }, 500);
     } catch (error) {
+      setLoading(false);
       setLabel('unable to delete product');
     }
   };
@@ -62,8 +54,17 @@ const ProductFeatures = ({
             </Modal.Content>
 
             <Modal.Actions>
-              <Button content='cancel' onClick={() => setIsModalOpen(false)} />
-              <Button content='delete' color='red' onClick={deleteProduct} />
+              <Button
+                content='cancel'
+                onClick={() => setIsModalOpen(false)}
+                disabled={loading}
+              />
+              <Button
+                content='delete'
+                color='red'
+                onClick={deleteProduct}
+                disabled={loading}
+              />
             </Modal.Actions>
           </Modal>
         </>

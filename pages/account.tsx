@@ -1,19 +1,34 @@
+import axios from 'axios';
 import React from 'react';
-import AccountHeader from '../components/Account/AccountHeader';
-import { Button } from 'semantic-ui-react';
-import { handleLogout } from '../utils/auth';
+import { parseCookies } from 'nookies';
 
-const Account = ({ user }) => {
-  const addPermissions =
-    user && (user.role === 'admin' || user.role === 'root');
+import AccountHeader from '../components/Account/AccountHeader';
+import AccountOrders from '../components/Account/AccountOrders';
+
+const Account = ({ orders, user }) => {
   return (
     <>
-      {addPermissions && <AccountHeader />}
-      <Button color='red' onClick={handleLogout}>
-        Log out
-      </Button>
+      <AccountHeader user={user} />
+      <AccountOrders orders={orders} />
     </>
   );
+};
+
+export const getServerSideProps = async ctx => {
+  const { token } = parseCookies(ctx, 'token');
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`,
+      {
+        headers: { authorization: token },
+      }
+    );
+    const { orders } = res.data;
+    return { props: { orders } };
+  } catch (error) {
+    console.log(error);
+    return { props: { orders: [] } };
+  }
 };
 
 export default Account;
