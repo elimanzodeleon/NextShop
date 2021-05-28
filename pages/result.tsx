@@ -72,6 +72,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     const user = await User.findById(id);
     const userCart = await Cart.findOne({ user: id }).populate({
       path: 'products.product',
+      ref: 'Product',
     });
 
     // 3. create a new order in Order collection with users cart

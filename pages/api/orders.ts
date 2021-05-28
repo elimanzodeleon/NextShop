@@ -26,7 +26,7 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
     // 2 - find all orders that belong to the current user
     const userOrders = await Order.find({ user: id })
-      .populate({ path: 'products.product' })
+      .populate({ path: 'products.product', ref: 'Product' })
       .sort({ createdAt: -1 });
 
     res.status(200).json({ orders: userOrders });

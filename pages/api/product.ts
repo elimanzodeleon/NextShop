@@ -84,7 +84,7 @@ const handleDeleteRequest = async (
     );
 
     // 204 -> successful req with no response data
-    return res.status(204).json({});
+    return res.status(200).json({ message: 'product deleted' });
   } catch (error) {
     return res.status(500).json({ error: 'error deleting product' });
   }

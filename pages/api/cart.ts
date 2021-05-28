@@ -105,6 +105,7 @@ const handleDeleteRequest = async (
       { new: true } // this returns the updated cart document
     ).populate({
       path: 'products.product',
+      ref: 'Product',
     });
     res.status(200).json({ updatedCartProducts: cart.products });
   } catch (error) {

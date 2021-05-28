@@ -22,7 +22,7 @@ export const getServerSideProps = async ctx => {
   try {
     const { id } = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
     const orders = await Order.find({ user: id })
-      .populate({ path: 'products.product' })
+      .populate({ path: 'products.product', ref: 'Product' })
       .sort({ createdAt: -1 });
 
     const ordersObj = JSON.parse(JSON.stringify(orders));

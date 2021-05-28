@@ -101,6 +101,7 @@ export const getServerSideProps = async ctx => {
   try {
     const cart = await CartModel.findOne({ user: id }).populate({
       path: 'products.product',
+      ref: 'Product',
     });
     const products = JSON.parse(JSON.stringify(cart.products));
     return { props: { products } };

@@ -34,6 +34,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     // 2 - find cart based on user id, populate the products
     const userCart = await Cart.findOne({ user: id }).populate({
       path: 'products.product',
+      ref: 'Product',
     });
 
     // 3 - grab quantity, name, price from each product and create a new list to set to line_items for stripe
