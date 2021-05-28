@@ -38,7 +38,7 @@ const AddProductToCart = ({ id, user }) => {
     try {
       // send put request to api since adding NOT creating
       const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/cart`,
+        '/api/cart',
         { productId: id, quantity },
         {
           headers: {

@@ -48,13 +48,10 @@ const Login = () => {
     }
 
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/login`,
-        {
-          email: form.email,
-          password: form.password,
-        }
-      );
+      const res = await axios.post('/api/login', {
+        email: form.email,
+        password: form.password,
+      });
       handleLogin(res.data.token);
       router.push('/');
     } catch (error) {

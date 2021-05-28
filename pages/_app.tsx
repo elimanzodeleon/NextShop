@@ -1,10 +1,13 @@
 import axios from 'axios';
 import React from 'react';
 import App, { AppProps, AppContext } from 'next/app';
+import jwt from 'jsonwebtoken';
 import { parseCookies, destroyCookie } from 'nookies';
-import Layout from '../components/_App/Layout';
+import Layout from '../components/Layout';
+import User from '../models/User';
 import { redirectUser } from '../utils/auth';
 import { IUserFrontEnd } from '../interfaces/user';
+import connectDB from '../utils/connectDB';
 import '/public/styles.css';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
@@ -33,25 +36,30 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     }
   } else {
     try {
-      // verify the token
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/account`,
-        {
+      const { id } = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
+
+      let user: IUserFrontEnd;
+      if (appContext.ctx.req) {
+        connectDB();
+        // currently running on server
+        user = await User.findById(id);
+      } else {
+        // currently running on client
+        const res = await axios.get('/api/account', {
           headers: {
             Authorization: token,
           },
-        }
-      );
-
-      // add user to pageProps if it exists in response
-      const { user }: { user: IUserFrontEnd } = res.data;
+        });
+        user = res.data.user;
+      }
 
       // if user role is not admin or root they cannot add products (only purchase)
       // so redirect them to home page
-      const isRoot = user.role === 'root';
-      const isAdmin = user.role === 'admin';
+      const isRoot = user.role == 'root';
+      const isAdmin = user.role == 'admin';
       const notPermitted =
         !(isRoot || isAdmin) && appContext.ctx.pathname === '/add';
+      console.log('not permitted', notPermitted);
       if (notPermitted) {
         redirectUser(appContext.ctx, '/');
       }

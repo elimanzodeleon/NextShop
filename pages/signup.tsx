@@ -52,13 +52,10 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/signup`,
-        {
-          email: form.email,
-          password: form.password,
-        }
-      );
+      const res = await axios.post('/api/signup', {
+        email: form.email,
+        password: form.password,
+      });
       handleLogin(res.data.token);
       router.push('/');
     } catch (error) {

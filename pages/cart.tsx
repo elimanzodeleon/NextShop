@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 import { parseCookies } from 'nookies';
 import { Segment, Label } from 'semantic-ui-react';
 import cookie from 'js-cookie';
-
+import CartModel from '../models/Cart';
+import connectDB from '../utils/connectDB';
 import getStripe from '../utils/stripe';
 import CartItemList from '../components/Cart/CartItemList';
 import CartSummary from '../components/Cart/CartSummary';
@@ -17,17 +18,14 @@ const Cart = ({ products }) => {
     // send delete request to cart endpoint
     try {
       const token: string = cookie.get('token');
-      const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/cart`,
-        {
-          headers: {
-            authorization: token,
-          },
-          data: {
-            productId: id,
-          },
-        }
-      );
+      const res = await axios.delete('/api/cart', {
+        headers: {
+          authorization: token,
+        },
+        data: {
+          productId: id,
+        },
+      });
       setCartProducts(res.data.updatedCartProducts);
     } catch (error) {
       console.log(error);
@@ -41,7 +39,7 @@ const Cart = ({ products }) => {
       const {
         data: { sessionId },
       } = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout`,
+        '/api/checkout',
         {},
         { headers: { authorization: token } }
       );
@@ -73,7 +71,9 @@ const Cart = ({ products }) => {
 };
 
 export const getServerSideProps = async ctx => {
+  connectDB();
   const { token } = parseCookies(ctx, 'token');
+  let authToken;
   // if there is no token redirect user to login + return
   if (!token) {
     return {
@@ -85,7 +85,7 @@ export const getServerSideProps = async ctx => {
   }
   // if token is invalid, redirect user
   try {
-    jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
+    authToken = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
   } catch (error) {
     return {
       redirect: {
@@ -95,17 +95,15 @@ export const getServerSideProps = async ctx => {
     };
   }
 
+  const { id } = authToken;
+
   // grab current users cart from db
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/cart`,
-      {
-        headers: {
-          authorization: token,
-        },
-      }
-    );
-    return { props: { products: res.data.products } };
+    const cart = await CartModel.findOne({ user: id }).populate({
+      path: 'products.product',
+    });
+    const products = JSON.parse(JSON.stringify(cart.products));
+    return { props: { products } };
   } catch (error) {
     console.log(error.response.data.error);
     return { props: {} };

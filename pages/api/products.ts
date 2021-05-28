@@ -34,6 +34,6 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       .limit(numResultsPerPage)
       .skip(offset);
   }
-  // sort the products by newest first
+
   res.status(200).json({ data: { products, totalPages } });
 };

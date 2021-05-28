@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter, NextRouter } from 'next/router';
-import { Menu, Container, Button, Image } from 'semantic-ui-react';
+import { Menu, Container, Image } from 'semantic-ui-react';
 import { IUserFrontEnd } from '../../interfaces/user';
 
 interface Props {
@@ -10,8 +10,8 @@ interface Props {
 }
 
 const Nav: React.FC<Props> = ({ user }) => {
-  const [search, setSearch] = useState(true);
   const router = useRouter();
+
   return (
     <div>
       <Head>

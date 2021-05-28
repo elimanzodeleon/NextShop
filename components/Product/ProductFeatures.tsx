@@ -17,7 +17,7 @@ const ProductFeatures = ({ _id, description, user }) => {
     setLoading(true);
     try {
       // delete method MUST have id in data object within body
-      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/product`, {
+      await axios.delete('/api/product', {
         data: {
           id: _id,
         },

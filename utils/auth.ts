@@ -1,6 +1,8 @@
 import Router from 'next/router';
 import cookie from 'js-cookie';
 
+import User from '../models/User';
+
 // fn will handle setting coken with user token upon login/signup
 export const handleLogin = (token: string) => {
   // setting cookie with token that expires in 7days

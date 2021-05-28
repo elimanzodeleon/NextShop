@@ -70,7 +70,7 @@ const Order = ({ _id, createdAt, products, total, router }) => {
             {products.map(p => {
               return (
                 <List.Item key={p.product._id}>
-                  <Image avatar src={p.product.mediaUrl} />
+                  <Image size='mini' src={p.product.mediaUrl} />
                   <List.Content>
                     <List.Description
                       as='a'

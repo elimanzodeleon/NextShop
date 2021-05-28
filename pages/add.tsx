@@ -69,15 +69,12 @@ const Add = () => {
 
     try {
       const url: string = await uploadImage();
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/product`,
-        {
-          name: product.name,
-          price: product.price,
-          image: url,
-          description: product.description,
-        }
-      );
+      const res = await axios.post('/api/product', {
+        name: product.name,
+        price: product.price,
+        image: url,
+        description: product.description,
+      });
 
       setProduct(prevState => ({
         ...product,

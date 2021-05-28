@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
-import Cart from '../../../models/Cart';
-import User from '../../../models/User';
-import connectDB from '../../../utils/connectDB';
-import { formatAmountForStripe } from '../../../utils/cart';
+import Cart from '../../models/Cart';
+import User from '../../models/User';
+import connectDB from '../../utils/connectDB';
+import { formatAmountForStripe } from '../../utils/cart';
 
 connectDB();
 
