@@ -23,8 +23,16 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// mongoose.models = {};
 
-mongoose.models = {};
+// console.log(mongoose.models);
+// export default mongoose.models.User ||
+//   mongoose.model<IUser>('User', UserSchema);
 
-export default mongoose.models.User ||
-  mongoose.model<IUser>('User', UserSchema);
+let User;
+try {
+  User = mongoose.model('User');
+} catch (e) {
+  User = mongoose.model<IUser>('User', UserSchema);
+}
+export default User;

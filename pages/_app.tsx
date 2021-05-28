@@ -59,7 +59,6 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
       const isAdmin = user.role == 'admin';
       const notPermitted =
         !(isRoot || isAdmin) && appContext.ctx.pathname === '/add';
-      console.log('not permitted', notPermitted);
       if (notPermitted) {
         redirectUser(appContext.ctx, '/');
       }
