@@ -30,7 +30,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   }
   try {
     const { id } = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
-    console.log(id);
     // 2 - find cart based on user id, populate the products
     const userCart = await Cart.findOne({ user: id }).populate({
       path: 'products.product',

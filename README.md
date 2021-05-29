@@ -1,6 +1,6 @@
 # Next Shop
 
-This is a full stack MERN application powered by [Next.js](https://nextjs.org/). Users can sign up and order products listed by root users. 
+This is a full stack MERN application powered by [Next.js](https://nextjs.org/). Users can sign up and order products listed by root users.
 
 [Demo](https://next-shop-cg1piunrc-elimanzodeleon.vercel.app/).
 
@@ -28,8 +28,3 @@ The back end was built using [Node.js](https://nodejs.org/en/), [MongoDB Atlas](
 
 - add search functionality
 - add more products (can be done by root users in production)
-
-#### ISSUES
-
-- users cannot checkout in production
-- root users cannot add or delete products in production - problem with Product collection in database

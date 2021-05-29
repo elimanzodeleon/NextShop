@@ -63,6 +63,7 @@ const handlePutRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       return item.product.equals(ObjectId(productId));
     });
     if (productAlreadyInCart) {
+      //@ts-ignore
       await Cart.findOneAndUpdate(
         { _id: cart._id, 'products.product': productId },
         { $inc: { 'products.$.quantity': quantity } }

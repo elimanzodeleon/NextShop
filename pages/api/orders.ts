@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
 import Order from '../../models/Order';
 import connectDB from '../../utils/connectDB';
+import Product from '../../models/Product';
 
 connectDB();
 
@@ -26,7 +27,7 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
     // 2 - find all orders that belong to the current user
     const userOrders = await Order.find({ user: id })
-      .populate({ path: 'products.product', ref: 'Product' })
+      .populate({ path: 'products.product', model: Product })
       .sort({ createdAt: -1 });
 
     res.status(200).json({ orders: userOrders });
