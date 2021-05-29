@@ -1,6 +1,8 @@
 # Next Shop
 
-This is a full stack MERN application powered by [Next.js](https://nextjs.org/). Users can sign up and order products listed by root users.
+This is a full stack MERN application powered by [Next.js](https://nextjs.org/). Users can sign up and order products listed by root users. 
+
+[Demo](https://next-shop-cg1piunrc-elimanzodeleon.vercel.app/).
 
 If testing app functionality, use card information:
 
