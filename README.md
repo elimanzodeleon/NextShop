@@ -2,7 +2,7 @@
 
 This is a full stack web application powered by [Next.js](https://nextjs.org/) that uses server-side rendering.
 
-[Demo](https://next-shop-bice.vercel.app/).
+[Demo](https://next-shop-o86ilhb3l-elimanzodeleon.vercel.app/).
 
 If testing app functionality, use card information:
 
